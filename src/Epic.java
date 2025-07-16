@@ -1,30 +1,34 @@
 import java.util.ArrayList;
 
 public class Epic extends Task{
-    ArrayList<Integer> epicsIds = new ArrayList<>();
-    public int epicId;
+    protected ArrayList<Integer> subtaskIds = new ArrayList<>();
 
     Epic(String name, String description) {
-        super(name, description);
-        epicId = taskId;
-        epicsIds.add(epicId);
+        super(name, description, Status.NEW);
     }
 
-    @Override
-    public void setStatus(Status status) {
-        return; //Не придумал как по-другому запретить наследнику менять статус через этот метод
+    public ArrayList<Integer> getSubtaskIds() {
+        return subtaskIds;
     }
 
-    public int getEpicId() {
-        return epicId;
+    public void addSubtaskId(int id) {
+        subtaskIds.add(id);
+    }
+
+    public void clearSubtasksIds() {
+        subtaskIds.clear();
+    }
+
+    public void removeSubtaskById(int id) {
+        subtaskIds.remove(id);
     }
 
     @Override
     public String toString() {
         return "Epic{" +
-                "epicId=" + epicId +
-                ", name=" + name +
-                ", description=" + description +
-                ", status=" + status.toString();
+                "id=" + getId() +
+                ", name=" + getName() +
+                ", description=" + getDescription() +
+                ", status=" + getStatus().toString();
     }
 }
