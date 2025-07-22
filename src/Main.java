@@ -1,3 +1,9 @@
+import model.Epic;
+import model.Status;
+import model.Subtask;
+import model.Task;
+import service.TaskManager;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -5,13 +11,13 @@ public class Main {
         TaskManager taskManager = new TaskManager();
 
         //Создание
-        Task task1 = new Task("Task 1", "Task1 description", Status.NEW);
-        Task task2 = new Task("Task 2", "Task2 description", Status.DONE);
+        Task task1 = new Task("model.Task 1", "Task1 description", Status.NEW);
+        Task task2 = new Task("model.Task 2", "Task2 description", Status.DONE);
         taskManager.addNewTask(task1);
         taskManager.addNewTask(task2);
 
-        Epic epic1 = new Epic("Epic 1", "Epic1 description");
-        Epic epic2 = new Epic("Epic 2", "Epic2 description");
+        Epic epic1 = new Epic("model.Epic 1", "Epic1 description");
+        Epic epic2 = new Epic("model.Epic 2", "Epic2 description");
         taskManager.addNewEpic(epic1);
         taskManager.addNewEpic(epic2);
 

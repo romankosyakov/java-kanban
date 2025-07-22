@@ -1,4 +1,5 @@
-import java.util.ArrayList;
+package model;
+
 import java.util.Objects;
 
 public class Task {
@@ -7,7 +8,7 @@ public class Task {
     private String description;
     private Status status;
 
-    Task(String name, String description, Status status) {
+    public Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
         this.status = status;
@@ -15,7 +16,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "model.Task{" +
                 "name=" + name +
                 ", description=" + description +
                 ", status=" + status.toString();
@@ -55,6 +56,7 @@ public class Task {
 
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
         return id == task.id &&
@@ -64,6 +66,16 @@ public class Task {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        int hash = 17;
+        hash += id;
+        hash *= 29;
+        if (name != null){
+            hash += name.hashCode();
+        }
+        hash *= 31;
+        if (description != null){
+            hash += description.hashCode();
+        }
+        return hash;
     }
 }

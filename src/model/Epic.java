@@ -1,9 +1,11 @@
+package model;
+
 import java.util.ArrayList;
 
 public class Epic extends Task{
     protected ArrayList<Integer> subtaskIds = new ArrayList<>();
 
-    Epic(String name, String description) {
+    public Epic(String name, String description) {
         super(name, description, Status.NEW);
     }
 
@@ -20,12 +22,12 @@ public class Epic extends Task{
     }
 
     public void removeSubtaskById(int id) {
-        subtaskIds.remove(id);
+        subtaskIds.remove(Integer.valueOf(id));
     }
 
     @Override
     public String toString() {
-        return "Epic{" +
+        return "model.Epic{" +
                 "id=" + getId() +
                 ", name=" + getName() +
                 ", description=" + getDescription() +
