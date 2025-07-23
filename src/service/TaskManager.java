@@ -18,7 +18,6 @@ public class TaskManager {
     }
 
     public void deleteAllEpics() {
-        deleteAllSubtasks(); //так как сабтаски не могут существовать без эпиков
         epics.clear();
     }
 
@@ -26,6 +25,7 @@ public class TaskManager {
         subtasks.clear();
         for (Epic epic : epics.values()) {
             epic.getSubtaskIds().clear();
+            epic.setStatus(Status.NEW);
         }
     }
 
@@ -100,10 +100,8 @@ public class TaskManager {
 
     public ArrayList<Subtask> getEpicSubtasks(Epic epic) {
         ArrayList<Subtask> subtasksByEpic = new ArrayList<>();
-        for (Subtask subtask : subtasks.values()) {
-            if (subtask.getEpicId() == epic.getId()) {
-                subtasksByEpic.add(subtask);
-            }
+        for (Integer subtaskId: epic.getSubtaskIds()) {
+            subtasksByEpic.add(subtasks.get(subtaskId));
         }
         return subtasksByEpic;
     }
@@ -113,28 +111,16 @@ public class TaskManager {
     }
 
     public Task getTaskById(int id) {
-        Task task = tasks.get(id);
-        if (task != null && id >= 1) {
-            return task;
-        } else {
-            System.out.println("Отсутствует задача с таким id.");
-            return null;
-        }
+        return tasks.get(id);
     }
 
     public Subtask getSubtaskById(int id) {
-        Subtask subtask = subtasks.get(id);
-        if (subtask != null && id >= 1) {
-            return subtask;
-        } else {
-            System.out.println("Отсутствует подзадача с таким id.");
-            return null;
-        }
+        return subtasks.get(id);
     }
 
     public void deleteEpicById(int id) {
         Epic epic = epics.get(id);
-        if (epic != null && id >= 1) {
+        if (epic != null) {
             for (Integer subtaskId : epic.getSubtaskIds()) {
                 subtasks.remove(subtaskId);
             }
@@ -151,7 +137,7 @@ public class TaskManager {
 
     public void deleteSubtaskById(int id) {
         Subtask subtask = subtasks.get(id);
-        if (subtask != null && id >= 1) {
+        if (subtask != null) {
             subtasks.remove(id);
             updateEpicStatus(subtask.getEpicId());
             System.out.println("Подзадача с id=" + id + " успешно удалена.");
