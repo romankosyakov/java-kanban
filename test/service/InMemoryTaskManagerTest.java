@@ -139,7 +139,7 @@ public class InMemoryTaskManagerTest {
     void updateEpicStatusTest() {
         Epic e1 = new Epic("E", "D");
         m.addNewEpic(e1);
-        assertEquals(Status.IN_PROGRESS, e1.getStatus());
+        assertEquals(Status.NEW, e1.getStatus());
         Subtask s1 = new Subtask("S1", "Desc", Status.NEW, e1.getId());
         m.addNewSubtask(s1);
         Subtask s2 = new Subtask("S2", "Desc", Status.DONE, e1.getId());
