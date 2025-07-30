@@ -55,9 +55,10 @@ public class InMemoryTaskManagerTest {
     @Test
     void epicAndSubtaskWithSameIdShouldNotBeEqual() {
         Epic epic1 = new Epic("Epic", "Epic");
-        epic1.setId(8);
+        m.addNewEpic(epic1);
         Subtask sub1 = new Subtask("Subtask", "SubtaskDescription", Status.NEW, 1);
-        sub1.setId(8);
+        m.addNewSubtask(sub1);
+        sub1.setId(epic1.getId());
         assertNotEquals(epic1, sub1);
     }
 
