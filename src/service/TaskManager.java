@@ -23,8 +23,6 @@ public interface TaskManager {
 
     void addNewSubtask(Subtask subtask);
 
-    void updateEpicStatus(int id);
-
     ArrayList<Subtask> getEpicSubtasks(Epic epic);
 
     Epic getEpicById(int id);
@@ -44,4 +42,6 @@ public interface TaskManager {
     void updateEpic(Epic epic);
 
     void updateSubtask(Subtask subtask);
+
+    void getHistory();
 }

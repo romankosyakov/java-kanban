@@ -9,7 +9,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     private final List<Task> memoryList = new ArrayList<>();
 
     @Override
-    public <T extends Task> void addInHistory(T task) {
+    public void addInHistory(Task task) {
         if (memoryList.size() > 10) {
             memoryList.removeFirst();
         }
@@ -18,6 +18,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public List<Task> getHistory() {
-        return memoryList;
+        List<Task> memory = memoryList;
+        return memory;
     }
 }
