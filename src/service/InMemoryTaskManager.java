@@ -2,6 +2,7 @@ package service;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import model.*;
 
@@ -12,13 +13,9 @@ public class InMemoryTaskManager implements TaskManager {
     private int id = 1;
     private final HistoryManager historyManager = Managers.getDefaultHistory();
 
-    public HistoryManager getHistoryManager() {
-        return historyManager;
-    }
-
     @Override
-    public void getHistory() {
-        historyManager.getHistory();
+    public List<Task> getHistory() {
+        return new ArrayList<>(historyManager.getHistory());
     }
 
     @Override
@@ -127,27 +124,21 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic getEpicById(int id) {
         Epic epic = epics.get(id);
-        if (epic != null) {
-            historyManager.addInHistory(epic);
-        }
+        historyManager.addInHistory(epic);
         return epic;
     }
 
     @Override
     public Task getTaskById(int id) {
         Task task = tasks.get(id);
-        if (task != null) {
-            historyManager.addInHistory(task);
-        }
+        historyManager.addInHistory(task);
         return task;
     }
 
     @Override
     public Subtask getSubtaskById(int id) {
         Subtask subtask = subtasks.get(id);
-        if (subtask != null) {
-            historyManager.addInHistory(subtask);
-        }
+        historyManager.addInHistory(subtask);
         return subtask;
     }
 

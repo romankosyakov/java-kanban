@@ -24,7 +24,7 @@ public class InMemoryTaskManagerTest {
         Epic epic = new Epic("Эпик", "Описание эпика");
         Subtask subtask = new Subtask("Подзадача", "Описание подзадачи", Status.NEW, epic.getId()); // Предполагаем, что есть Epic с id = 1
 
-        List<Task> history = m.getHistoryManager().getHistory();
+        List<Task> history = m.getHistory();
 
         // Добавляем задачи
         history.add(task);

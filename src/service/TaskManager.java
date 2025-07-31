@@ -3,6 +3,7 @@ package service;
 import model.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public interface TaskManager {
     void deleteAllTasks();
@@ -43,5 +44,5 @@ public interface TaskManager {
 
     void updateSubtask(Subtask subtask);
 
-    void getHistory();
+    List<Task> getHistory();
 }
