@@ -61,11 +61,11 @@ public class Task {
         int hash = 17;
         hash += id;
         hash *= 29;
-        if (name != null){
+        if (name != null) {
             hash += name.hashCode();
         }
         hash *= 31;
-        if (description != null){
+        if (description != null) {
             hash += description.hashCode();
         }
         return hash;
