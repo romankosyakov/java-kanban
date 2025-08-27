@@ -34,21 +34,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
         subtasks.clear();
         epics.clear();
-
-        //Сергей, подскажи, пожалуйста, какой вариант лучше?
-
-        /*
-        while (Integer i : epics.keySet()) {
-            Epic epic = epics.get(i);
-            for (Integer epicSubtaskId : epic.getSubtaskIds()) {
-                historyManager.removeNode(epicSubtaskId);
-            }
-            historyManager.removeNode(epic.getId());
-        }
-        subtasks.clear();
-        epics.clear();
-        */
-
     }
 
     @Override

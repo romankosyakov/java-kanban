@@ -31,10 +31,8 @@ public class InMemoryHistoryManagerTest {
     void shouldAddTasksToHistory() {
         historyManager.addInHistory(task1);
         historyManager.addInHistory(task2);
-        List<Task> hist = historyManager.getHistory();
-        assertEquals(2, hist.size());
-        assertEquals("Name1", hist.get(0).getName());
-        assertEquals("Name2", hist.get(1).getName());
+        historyManager.addInHistory(task3);
+        assertEquals(List.of(task1, task2, task3), historyManager.getHistory());
     }
 
     @Test
@@ -43,11 +41,7 @@ public class InMemoryHistoryManagerTest {
         historyManager.addInHistory(task2);
         historyManager.addInHistory(task3);
         historyManager.addInHistory(task2);
-        List<Task> hist = historyManager.getHistory();
-        assertEquals(3, hist.size());
-        assertEquals("Name1", hist.get(0).getName());
-        assertEquals("Name3", hist.get(1).getName());
-        assertEquals("Name2", hist.get(2).getName());
+        assertEquals(List.of(task1, task3, task2), historyManager.getHistory());
     }
 
     @Test
@@ -56,11 +50,7 @@ public class InMemoryHistoryManagerTest {
         historyManager.addInHistory(task2);
         historyManager.addInHistory(task3);
         historyManager.addInHistory(task1);
-        List<Task> hist = historyManager.getHistory();
-        assertEquals(3, hist.size());
-        assertEquals("Name2", hist.get(0).getName());
-        assertEquals("Name3", hist.get(1).getName());
-        assertEquals("Name1", hist.get(2).getName());
+        assertEquals(List.of(task2, task3, task1), historyManager.getHistory());
     }
 
     @Test
@@ -69,11 +59,7 @@ public class InMemoryHistoryManagerTest {
         historyManager.addInHistory(task2);
         historyManager.addInHistory(task3);
         historyManager.addInHistory(task3);
-        List<Task> hist = historyManager.getHistory();
-        assertEquals(3, hist.size());
-        assertEquals("Name1", hist.get(0).getName());
-        assertEquals("Name2", hist.get(1).getName());
-        assertEquals("Name3", hist.get(2).getName());
+        assertEquals(List.of(task1, task2, task3), historyManager.getHistory());
     }
 
     @Test
@@ -82,10 +68,7 @@ public class InMemoryHistoryManagerTest {
         historyManager.addInHistory(task2);
         historyManager.addInHistory(task3);
         historyManager.removeNode(task2.getId());
-        List<Task> hist = historyManager.getHistory();
-        assertEquals(2, hist.size());
-        assertEquals("Name1", hist.get(0).getName());
-        assertEquals("Name3", hist.get(1).getName());
+        assertEquals(List.of(task1, task3), historyManager.getHistory());
     }
 
     @Test
@@ -94,10 +77,7 @@ public class InMemoryHistoryManagerTest {
         historyManager.addInHistory(task2);
         historyManager.addInHistory(task3);
         historyManager.removeNode(task1.getId());
-        List<Task> hist = historyManager.getHistory();
-        assertEquals(2, hist.size());
-        assertEquals("Name2", hist.get(0).getName());
-        assertEquals("Name3", hist.get(1).getName());
+        assertEquals(List.of(task2, task3), historyManager.getHistory());
     }
 
     @Test
@@ -106,10 +86,7 @@ public class InMemoryHistoryManagerTest {
         historyManager.addInHistory(task2);
         historyManager.addInHistory(task3);
         historyManager.removeNode(task3.getId());
-        List<Task> hist = historyManager.getHistory();
-        assertEquals(2, hist.size());
-        assertEquals("Name1", hist.get(0).getName());
-        assertEquals("Name2", hist.get(1).getName());
+        assertEquals(List.of(task1, task2), historyManager.getHistory());
     }
 
 
