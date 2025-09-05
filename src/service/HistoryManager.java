@@ -9,4 +9,6 @@ public interface HistoryManager {
     void addInHistory(Task task);
 
     List<Task> getHistory();
+
+    void removeNode(int id);
 }
