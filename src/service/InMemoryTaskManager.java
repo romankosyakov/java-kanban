@@ -1,5 +1,6 @@
 package service;
 
+import java.io.File;
 import java.util.*;
 
 import model.*;
@@ -10,6 +11,10 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Integer, Subtask> subtasks = new HashMap<>();
     private int id = 1;
     private final HistoryManager historyManager = Managers.getDefaultHistory();
+
+    void setIdInManager(int id) {
+        this.id = id;
+    }
 
     @Override
     public List<Task> getHistory() {
@@ -91,7 +96,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    private void updateEpicStatus(int id) {
+    void updateEpicStatus(int id) {
         Epic epic = epics.get(id);
         List<Integer> subtaskIds = new ArrayList<>(epic.getSubtaskIds());
         int subtaskIdsSize = subtaskIds.size();
@@ -220,5 +225,4 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("Отсутствует подзадача с таким id для обновления.");
         }
     }
-
 }

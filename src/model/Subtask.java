@@ -2,6 +2,7 @@ package model;
 
 public class Subtask extends Task {
     protected int epicId;
+    private TaskType subtask = TaskType.SUBTASK;
 
     public Subtask(String name, String description, Status status, int epicId) {
         super(name, description, status);
