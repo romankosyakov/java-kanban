@@ -10,17 +10,17 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-    class FileBackedTaskManagerTest {
+class FileBackedTaskManagerTest {
 
-        private File testFile;
-        private FileBackedTaskManager manager;
+    private File testFile;
+    private FileBackedTaskManager manager;
 
-        @BeforeEach
-        void setUp() throws IOException {
-            testFile = File.createTempFile("test_data", ".csv");
-            testFile.deleteOnExit(); // Удалить файл после завершения тестов
-            manager = new FileBackedTaskManager(testFile, false);
-        }
+    @BeforeEach
+    void setUp() throws IOException {
+        testFile = File.createTempFile("test_data", ".csv");
+        testFile.deleteOnExit(); // Удалить файл после завершения тестов
+        manager = new FileBackedTaskManager(testFile, false);
+    }
 
     @Test
     void testSaveAndLoadEmptyManager() {
@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
         manager.save();
 
         // Загружаем обратно
-        FileBackedTaskManager loadedManager = new FileBackedTaskManager(testFile,true);
+        FileBackedTaskManager loadedManager = new FileBackedTaskManager(testFile, true);
 
         assertTrue(loadedManager.getTasks().isEmpty());
         assertTrue(loadedManager.getEpics().isEmpty());
@@ -45,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.*;
         manager.addNewTask(task2);
 
         // Перезагружаем менеджер
-        FileBackedTaskManager loadedManager = new FileBackedTaskManager(testFile,true);
+        FileBackedTaskManager loadedManager = new FileBackedTaskManager(testFile, true);
 
         List<Task> tasks = loadedManager.getTasks();
         assertEquals(2, tasks.size());
@@ -59,7 +59,7 @@ import static org.junit.jupiter.api.Assertions.*;
         Task original = new Task("Test Task", "Test Description", Status.DONE);
         manager.addNewTask(original);
 
-        FileBackedTaskManager loadedManager = new FileBackedTaskManager(testFile,true);
+        FileBackedTaskManager loadedManager = new FileBackedTaskManager(testFile, true);
         Task loaded = loadedManager.getTaskById(original.getId());
 
         assertNotNull(loaded);
@@ -80,7 +80,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
         int lastId = manager.getTasks().get(2).getId();
 
-        FileBackedTaskManager loadedManager = new FileBackedTaskManager(testFile,true);
+        FileBackedTaskManager loadedManager = new FileBackedTaskManager(testFile, true);
 
         // Добавляем новую задачу - должна получить следующий id
         Task newTask = new Task("New Task", "New Desc", Status.NEW);
@@ -95,7 +95,7 @@ import static org.junit.jupiter.api.Assertions.*;
         manager.addNewTask(task);
 
         // Используем статический метод из ТЗ
-        FileBackedTaskManager loadedManager = new FileBackedTaskManager(testFile,true);
+        FileBackedTaskManager loadedManager = new FileBackedTaskManager(testFile, true);
 
         assertFalse(loadedManager.getTasks().isEmpty());
         assertEquals(task.getName(), loadedManager.getTaskById(task.getId()).getName());
@@ -110,7 +110,7 @@ import static org.junit.jupiter.api.Assertions.*;
         task.setStatus(Status.DONE);
         manager.updateTask(task);
 
-        FileBackedTaskManager loadedManager = new FileBackedTaskManager(testFile,true);
+        FileBackedTaskManager loadedManager = new FileBackedTaskManager(testFile, true);
         Task loaded = loadedManager.getTaskById(task.getId());
 
         assertEquals(Status.DONE, loaded.getStatus());
@@ -129,7 +129,7 @@ import static org.junit.jupiter.api.Assertions.*;
         Task task = new Task("Test Task", "Description", Status.NEW); // Запятая в описании
         manager.addNewTask(task);
 
-        FileBackedTaskManager loadedManager = new FileBackedTaskManager(testFile,true);
+        FileBackedTaskManager loadedManager = new FileBackedTaskManager(testFile, true);
         Task loaded = loadedManager.getTaskById(task.getId());
 
         assertEquals("Description", loaded.getDescription());
