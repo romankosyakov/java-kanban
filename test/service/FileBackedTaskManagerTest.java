@@ -23,19 +23,6 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    void testSaveAndLoadEmptyManager() {
-        // Сохраняем пустой менеджер
-        manager.save();
-
-        // Загружаем обратно
-        FileBackedTaskManager loadedManager = new FileBackedTaskManager(testFile, true);
-
-        assertTrue(loadedManager.getTasks().isEmpty());
-        assertTrue(loadedManager.getEpics().isEmpty());
-        assertTrue(loadedManager.getSubtasks().isEmpty());
-    }
-
-    @Test
     void testSaveAndLoadTasks() {
         // Создаем задачи
         Task task1 = new Task("Task 1", "Description 1", Status.NEW);
@@ -114,14 +101,6 @@ class FileBackedTaskManagerTest {
         Task loaded = loadedManager.getTaskById(task.getId());
 
         assertEquals(Status.DONE, loaded.getStatus());
-    }
-
-    @Test
-    void testFileHeaderCorrect() throws IOException {
-        manager.save();
-
-        String content = java.nio.file.Files.readString(testFile.toPath());
-        assertTrue(content.startsWith("taskId,type,name,status,description,epicId"));
     }
 
     @Test

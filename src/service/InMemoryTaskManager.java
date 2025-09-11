@@ -14,6 +14,9 @@ public class InMemoryTaskManager implements TaskManager {
     void setIdInManager(int id) {
         this.id = id;
     }
+    int getMaxId() {
+        return id;
+    }
 
     @Override
     public List<Task> getHistory() {

@@ -7,7 +7,6 @@ public class Task {
     private final String name;
     private final String description;
     private Status status;
-    private TaskType type = TaskType.TASK;
 
     public Task(String name, String description, Status status) {
         this.name = name;
@@ -15,12 +14,12 @@ public class Task {
         this.status = status;
     }
 
-    public int getId() {
-        return id;
+    public TaskType getType(){
+        return TaskType.TASK;
     }
 
-    public TaskType getType() {
-        return type;
+    public int getId() {
+        return id;
     }
 
     public void setId(int id) {
