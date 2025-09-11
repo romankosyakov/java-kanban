@@ -14,4 +14,5 @@ public class ManagersTest {
         assertTrue(tm.getTasks().isEmpty());
         assertTrue(hm.getHistory().isEmpty());
     }
+
 }
