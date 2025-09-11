@@ -9,7 +9,7 @@ public class Subtask extends Task {
     }
 
     @Override
-    public TaskType getType(){
+    public TaskType getType() {
         return TaskType.SUBTASK;
     }
 

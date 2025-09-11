@@ -14,7 +14,7 @@ public class Task {
         this.status = status;
     }
 
-    public TaskType getType(){
+    public TaskType getType() {
         return TaskType.TASK;
     }
 
