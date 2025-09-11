@@ -22,7 +22,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-
     @Override
     public void addNewSubtask(Subtask subtask) {
         super.addNewSubtask(subtask);
