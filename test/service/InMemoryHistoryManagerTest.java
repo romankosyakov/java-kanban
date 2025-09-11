@@ -89,5 +89,4 @@ public class InMemoryHistoryManagerTest {
         assertEquals(List.of(task1, task2), historyManager.getHistory());
     }
 
-
 }
