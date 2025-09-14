@@ -13,9 +13,68 @@ import java.util.List;
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private final File dataFile;
 
-    StringConverter converter = new StringConverter();
+    public static class StringConverter {
 
-    public FileBackedTaskManager(File dataFile, boolean loadData) {
+        public static Task convertToTask(String value) {
+            try {
+                String[] fields = value.split(",", -1); // -1 чтобы сохранить пустые поля
+                if (fields.length < 5) {
+                    return null;
+                }
+
+                int id = Integer.parseInt(fields[0]);
+                TaskType taskType = TaskType.valueOf(fields[1]);
+                String name = fields[2];
+                Status status = Status.valueOf(fields[3]);
+                String description = fields[4];
+
+                switch (taskType) {
+                    case TASK:
+                        Task task = new Task(name, description, status);
+                        task.setId(id);
+                        return task;
+
+                    case EPIC:
+                        Epic epic = new Epic(name, description);
+                        epic.setId(id);
+                        epic.setStatus(status);
+                        return epic;
+
+                    case SUBTASK:
+                        if (fields.length < 6) {
+                            return null;
+                        }
+                        int epicId = Integer.parseInt(fields[5]);
+                        Subtask subtask = new Subtask(name, description, status, epicId);
+                        subtask.setId(id);
+                        return subtask;
+
+                    default:
+                        return null;
+                }
+            } catch (Exception e) {
+                System.out.println("Ошибка парсинга строки: " + value + " - " + e.getMessage());
+                return null;
+            }
+        }
+
+        public static String convertToString(Task task) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(task.getId()).append(",");
+            sb.append(task.getType().toString()).append(",");
+            sb.append(task.getName()).append(",");
+            sb.append(task.getStatus()).append(",");
+            sb.append(task.getDescription());
+            if (task.getType() == TaskType.SUBTASK) {
+                sb.append(",");
+                sb.append(((Subtask) task).getEpicId());
+            }
+            return sb.toString();
+        }
+
+    }
+
+       public FileBackedTaskManager(File dataFile, boolean loadData) {
         this.dataFile = checkAndCreateFile(dataFile);
         if (loadData) {
             loadDataFromFile();
@@ -102,15 +161,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             writer.write(header);
             List<Task> tasks = getTasks();
             for (Task task : tasks) {
-                writer.write(converter.convertToString(task) + System.lineSeparator());
+                writer.write(StringConverter.convertToString(task) + System.lineSeparator());
             }
             List<Epic> epics = getEpics();
             for (Epic epic : epics) {
-                writer.write(converter.convertToString(epic) + System.lineSeparator());
+                writer.write(StringConverter.convertToString(epic) + System.lineSeparator());
             }
             List<Subtask> subtasks = getSubtasks();
             for (Subtask subtask : subtasks) {
-                writer.write(converter.convertToString(subtask) + System.lineSeparator());
+                writer.write(StringConverter.convertToString(subtask) + System.lineSeparator());
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка сохранения данных в файл: " + dataFile.getName(), e);
@@ -155,7 +214,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             for (int i = 1; i < lines.length; i++) {
                 String line = lines[i].trim();
                 if (!line.isEmpty()) {
-                    Task task = converter.convertToTask(line);
+                    Task task = StringConverter.convertToTask(line);
                     if (task != null) {
                         restoreTask(task);
                     }
