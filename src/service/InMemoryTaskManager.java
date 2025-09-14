@@ -11,6 +11,14 @@ public class InMemoryTaskManager implements TaskManager {
     private int id = 1;
     private final HistoryManager historyManager = Managers.getDefaultHistory();
 
+    void setIdInManager(int id) {
+        this.id = id;
+    }
+
+    int getMaxId() {
+        return id;
+    }
+
     @Override
     public List<Task> getHistory() {
         return new ArrayList<>(historyManager.getHistory());
@@ -91,7 +99,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    private void updateEpicStatus(int id) {
+    void updateEpicStatus(int id) {
         Epic epic = epics.get(id);
         List<Integer> subtaskIds = new ArrayList<>(epic.getSubtaskIds());
         int subtaskIdsSize = subtaskIds.size();
@@ -220,5 +228,4 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("Отсутствует подзадача с таким id для обновления.");
         }
     }
-
 }
