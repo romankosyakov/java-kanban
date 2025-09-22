@@ -6,6 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,8 +27,8 @@ class FileBackedTaskManagerTest {
     @Test
     void testSaveAndLoadTasks() {
         // Создаем задачи
-        Task task1 = new Task("Task 1", "Description 1", Status.NEW);
-        Task task2 = new Task("Task 2", "Description 2", Status.IN_PROGRESS);
+        Task task1 = new Task("Task 1", "Description 1", Status.NEW, Duration.ofHours(2).plusMinutes(30), LocalDateTime.now());
+        Task task2 = new Task("Task 2", "Description 2", Status.IN_PROGRESS, Duration.ofHours(2).plusMinutes(30), LocalDateTime.now().plusDays(2));
 
         manager.addNewTask(task1);
         manager.addNewTask(task2);
@@ -43,7 +45,7 @@ class FileBackedTaskManagerTest {
 
     @Test
     void testTaskFieldsPreservedAfterSaveLoad() {
-        Task original = new Task("Test Task", "Test Description", Status.DONE);
+        Task original = new Task("Test Task", "Test Description", Status.DONE, Duration.ofHours(2).plusMinutes(30), LocalDateTime.now());
         manager.addNewTask(original);
 
         FileBackedTaskManager loadedManager = new FileBackedTaskManager(testFile, true);
@@ -61,7 +63,7 @@ class FileBackedTaskManagerTest {
     void testIdCounterRestoredCorrectly() {
         // Создаем несколько задач
         for (int i = 0; i < 3; i++) {
-            Task task = new Task("Task " + i, "Desc " + i, Status.NEW);
+            Task task = new Task("Task " + i, "Desc " + i, Status.NEW, Duration.ofHours(2).plusMinutes(30), LocalDateTime.now().plusDays(i));
             manager.addNewTask(task);
         }
 
@@ -70,7 +72,7 @@ class FileBackedTaskManagerTest {
         FileBackedTaskManager loadedManager = new FileBackedTaskManager(testFile, true);
 
         // Добавляем новую задачу - должна получить следующий id
-        Task newTask = new Task("New Task", "New Desc", Status.NEW);
+        Task newTask = new Task("New Task", "New Desc", Status.NEW, Duration.ofHours(2).plusMinutes(30), LocalDateTime.now().plusDays(100));
         loadedManager.addNewTask(newTask);
 
         assertEquals(lastId + 1, newTask.getId());
@@ -78,7 +80,7 @@ class FileBackedTaskManagerTest {
 
     @Test
     void testLoadFromFileStaticMethod() {
-        Task task = new Task("Test", "Desc", Status.NEW);
+        Task task = new Task("Test", "Desc", Status.NEW, Duration.ofHours(2).plusMinutes(30), LocalDateTime.now());
         manager.addNewTask(task);
 
         // Используем статический метод из ТЗ
@@ -90,7 +92,7 @@ class FileBackedTaskManagerTest {
 
     @Test
     void testSaveAfterModification() {
-        Task task = new Task("Original", "Desc", Status.NEW);
+        Task task = new Task("Original", "Desc", Status.NEW, Duration.ofHours(2).plusMinutes(30), LocalDateTime.now());
         manager.addNewTask(task);
 
         // Модифицируем и сохраняем
@@ -105,7 +107,7 @@ class FileBackedTaskManagerTest {
 
     @Test
     void testCSVFormatCorrect() {
-        Task task = new Task("Test Task", "Description", Status.NEW); // Запятая в описании
+        Task task = new Task("Test Task", "Description", Status.NEW, Duration.ofHours(2).plusMinutes(30), LocalDateTime.now()); // Запятая в описании
         manager.addNewTask(task);
 
         FileBackedTaskManager loadedManager = new FileBackedTaskManager(testFile, true);
@@ -116,7 +118,7 @@ class FileBackedTaskManagerTest {
 
     @Test
     void testMultipleManagersSameFile() {
-        Task task1 = new Task("Task 1", "Desc", Status.NEW);
+        Task task1 = new Task("Task 1", "Desc", Status.NEW, Duration.ofHours(2).plusMinutes(30), LocalDateTime.now());
         manager.addNewTask(task1);
 
         // Второй менеджер с тем же файлом
