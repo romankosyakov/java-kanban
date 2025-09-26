@@ -28,8 +28,8 @@ public class InMemoryTaskManager implements TaskManager {
         return new ArrayList<>(historyManager.getHistory());
     }
 
-    public TreeSet<Task> getPrioritizedTasks() {
-        return Stream.concat(
+    public ArrayList<Task> getPrioritizedTasks() {
+        TreeSet<Task> sortedTasks = Stream.concat(
                         getTasks().stream().filter(Objects::nonNull),
                         getSubtasks().stream().filter(Objects::nonNull)
                 )
@@ -37,6 +37,8 @@ public class InMemoryTaskManager implements TaskManager {
                 .collect(Collectors.toCollection(
                         () -> new TreeSet<>(Comparator.comparing(Task::getStartTime))
                 ));
+
+        return new ArrayList<>(sortedTasks);
     }
 
     @Override
@@ -60,10 +62,13 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteAllSubtasks() {
         subtasks.keySet().forEach(historyManager::removeNode);
         subtasks.clear();
-        epics.values().stream()
+        epics.values()
                 .forEach(epic -> {
                     epic.getSubtaskIds().clear();
                     epic.setStatus(Status.NEW);
+                    epic.setDuration(null);
+                    epic.setStartTime(null);
+                    epic.setEndTime(null);
                 });
     }
 
@@ -84,16 +89,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void addNewTask(Task task) {
-        try {
-            if (intersectWithOtherTasks(task)) {
-                throw new IntersectWithOtherTaskException("Невозможно добавить задачу! Пересечение времени с другой задачей.");
-            }
-            task.setId(id);
-            tasks.put(task.getId(), task);
-            id++;
-        } catch (IntersectWithOtherTaskException exception) {
-            System.out.println(exception.getMessage());
+        if (intersectWithOtherTasks(task)) {
+            throw new IntersectWithOtherTaskException("Невозможно добавить задачу! Пересечение времени с другой задачей.");
         }
+        task.setId(id);
+        tasks.put(task.getId(), task);
+        id++;
     }
 
     @Override
@@ -105,25 +106,21 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void addNewSubtask(Subtask subtask) {
-        try {
-            if (intersectWithOtherTasks(subtask)) {
-                throw new IntersectWithOtherTaskException("Невозможно добавить подзадачу! Пересечение времени с другой задачей.");
-            }
-            int subtaskEpicId = subtask.getEpicId();
-            if (epics.get(subtaskEpicId) != null) {
-                subtask.setId(id);
-                subtasks.put(id, subtask);
-                epics.get(subtaskEpicId).addSubtaskId(subtask.getId());
-                updateEpicStatus(subtaskEpicId);
-                updateEpicStartTime(subtaskEpicId);
-                updateEpicDuration(subtaskEpicId);
-                updateEpicEndTime(subtaskEpicId);
-                id++;
-            } else {
-                System.out.println("Отсутствует эпик с таким id. Добавление подзадачи не было выполнено");
-            }
-        } catch (IntersectWithOtherTaskException exception) {
-            System.out.println(exception.getMessage());
+        if (intersectWithOtherTasks(subtask)) {
+            throw new IntersectWithOtherTaskException("Невозможно добавить подзадачу! Пересечение времени с другой задачей.");
+        }
+        int subtaskEpicId = subtask.getEpicId();
+        if (epics.get(subtaskEpicId) != null) {
+            subtask.setId(id);
+            subtasks.put(id, subtask);
+            epics.get(subtaskEpicId).addSubtaskId(subtask.getId());
+            updateEpicStatus(subtaskEpicId);
+            updateEpicStartTime(subtaskEpicId);
+            updateEpicDuration(subtaskEpicId);
+            updateEpicEndTime(subtaskEpicId);
+            id++;
+        } else {
+            System.out.println("Отсутствует эпик с таким id. Добавление подзадачи не было выполнено");
         }
     }
 
@@ -149,27 +146,19 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    void updateEpicDuration(int id) {
-        Epic epic = epics.get(id);
-        if (epic != null) {
-            epic.setDuration(
-                    Duration.between(epic.getStartTime(), epic.getEndTime())
-            );
-        } else {
-            System.out.println("Отсутствует эпик с таким id.");
-        }
-    }
-
     void updateEpicStartTime(int id) {
         Epic epic = epics.get(id);
         if (epic != null) {
-            epic.setStartTime(
-                    getEpicSubtasks(epic).stream()
-                            .map(Task::getStartTime)
-                            .filter(Objects::nonNull)
-                            .min(LocalDateTime::compareTo)
-                            .orElseThrow(() -> new NoSuchElementException("Время начала не найдено"))
-            );
+            Optional<LocalDateTime> minStartTime = getEpicSubtasks(epic).stream()
+                    .map(Task::getStartTime)
+                    .filter(Objects::nonNull)
+                    .min(LocalDateTime::compareTo);
+
+            if (minStartTime.isPresent()) {
+                epic.setStartTime(minStartTime.get());
+            } else {
+                epic.setStartTime(null);
+            }
         } else {
             System.out.println("Отсутствует эпик с таким id.");
         }
@@ -178,15 +167,27 @@ public class InMemoryTaskManager implements TaskManager {
     void updateEpicEndTime(int id) {
         Epic epic = epics.get(id);
         if (epic != null) {
-            epic.setEndTime(
-                    getEpicSubtasks(epic).stream()
-                            .map(Task::getEndTime)
-                            .filter(Objects::nonNull)
-                            .max(LocalDateTime::compareTo)
-                            .orElseThrow(() -> new NoSuchElementException("Время окончания не найдено"))
-            );
+            Optional<LocalDateTime> maxEndTime = getEpicSubtasks(epic).stream()
+                    .map(Task::getEndTime)
+                    .filter(Objects::nonNull)
+                    .max(LocalDateTime::compareTo);
+
+            if (maxEndTime.isPresent()) {
+                epic.setEndTime(maxEndTime.get());
+            } else {
+                epic.setEndTime(null);
+            }
         } else {
             System.out.println("Отсутствует эпик с таким id.");
+        }
+    }
+
+    void updateEpicDuration(int id) {
+        Epic epic = epics.get(id);
+        if (epic != null && epic.getStartTime() != null && epic.getEndTime() != null) {
+            epic.setDuration(Duration.between(epic.getStartTime(), epic.getEndTime()));
+        } else {
+            epic.setDuration(null);
         }
     }
 
@@ -296,10 +297,23 @@ public class InMemoryTaskManager implements TaskManager {
     private boolean intersectWithOtherTasks(Task externalTask) {
         LocalDateTime externalTaskStartTime = externalTask.getStartTime();
         LocalDateTime externalTaskEndTime = externalTask.getEndTime();
+
+        // Если у внешней задачи нет времени - не проверяем пересечения
+        if (externalTaskStartTime == null || externalTaskEndTime == null) {
+            return false;
+        }
+
         return getPrioritizedTasks().stream()
                 .anyMatch(task -> {
                     LocalDateTime taskStartTime = task.getStartTime();
                     LocalDateTime taskEndTime = task.getEndTime();
+
+                    // Пропускаем задачи без времени
+                    if (taskStartTime == null || taskEndTime == null) {
+                        return false;
+                    }
+
+                    // Проверяем пересечение интервалов
                     return externalTaskStartTime.isBefore(taskEndTime) &&
                             externalTaskEndTime.isAfter(taskStartTime);
                 });

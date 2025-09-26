@@ -6,9 +6,7 @@ import java.util.ArrayList;
 
 public class Epic extends Task {
     protected ArrayList<Integer> subtaskIds = new ArrayList<>();
-    private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private Duration duration;
 
     public Epic(String name, String description, Duration duration, LocalDateTime startTime) {
         super(name, description, Status.NEW, duration, startTime);
@@ -48,6 +46,11 @@ public class Epic extends Task {
     }
 
     @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    @Override
     public String toString() {
         return "model.Epic{" +
                 "id=" + getId() +
@@ -56,7 +59,8 @@ public class Epic extends Task {
                 ", status=" + getStatus().toString() +
                 ", duration=" + getDurationConverted() +
                 ", startTime=" + getStartTimeConverted() +
-                ", endTime=" + getEndTimeConverted();
+                ", endTime=" + getEndTimeConverted() +
+                "}";
     }
 
 }

@@ -10,8 +10,8 @@ public class Task {
     private final String name;
     private final String description;
     private Status status;
-    private final Duration duration;
-    private final LocalDateTime startTime;
+    Duration duration;
+    LocalDateTime startTime;
 
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
@@ -59,7 +59,8 @@ public class Task {
                 ", status=" + status.toString() +
                 ", duration=" + getDurationConverted() +
                 ", startTime=" + getStartTimeConverted() +
-                ", endTime=" + getEndTimeConverted();
+                ", endTime=" + getEndTimeConverted() +
+                "}";
     }
 
     @Override
@@ -96,21 +97,25 @@ public class Task {
     }
 
     public LocalDateTime getEndTime() {
+        if (startTime == null || duration == null) {
+            return null;
+        }
         return startTime.plus(duration);
     }
 
     public String getDurationConverted() {
-        return String.format("%d:%02d:%02d",
+        return duration != null ? String.format("%d:%02d:%02d",
                 duration.toHours(),
                 duration.toMinutesPart(),
-                duration.toSecondsPart());
+                duration.toSecondsPart()) : "null";
     }
 
     public String getStartTimeConverted() {
-        return startTime.format(dateTimeFormatter);
+        return startTime != null ? startTime.format(dateTimeFormatter) : "null";
     }
 
     public String getEndTimeConverted() {
-        return getEndTime().format(dateTimeFormatter);
+        return startTime != null && duration != null ?
+                getEndTime().format(dateTimeFormatter) : "null";
     }
 }

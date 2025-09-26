@@ -1,6 +1,6 @@
 package service;
 
-public class IntersectWithOtherTaskException extends Exception {
+public class IntersectWithOtherTaskException extends RuntimeException {
     public IntersectWithOtherTaskException(String s) {
     }
 }
