@@ -25,8 +25,9 @@ public class Subtask extends Task {
                 ", description=" + getDescription() +
                 ", status=" + getStatus().toString() +
                 ", duration=" + getDurationConverted() +
-                ", startTime=" + getStartTime() +
-                ", endTime=" + getEndTimeConverted();
+                ", startTime=" + getStartTimeConverted() +
+                ", endTime=" + getEndTimeConverted() +
+                "}";
     }
 
     public int getEpicId() {

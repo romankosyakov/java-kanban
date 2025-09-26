@@ -35,6 +35,7 @@ public class EpicTest {
     void toStringShouldContainFields() {
         Epic epic = new Epic("Epic", "Test", Duration.ofHours(2).plusMinutes(30), LocalDateTime.of(2000, 9, 18, 2, 30, 0, 0));
         epic.setId(10);
+        epic.setEndTime(epic.getStartTime().plus(epic.getDuration()));
         String str = epic.toString();
         assertTrue(str.contains("id=10"));
         assertTrue(str.contains("name=Epic"));

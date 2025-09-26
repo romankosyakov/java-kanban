@@ -105,9 +105,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     public FileBackedTaskManager(File dataFile, boolean loadData) {
-        this.dataFile = checkAndCreateFile(dataFile);
-        if (loadData) {
-            loadDataFromFile();
+        try {
+            this.dataFile = checkAndCreateFile(dataFile);
+            if (loadData) {
+                loadDataFromFile();
+            }
+        } catch (IOException e) {
+            throw new ManagerSaveException("Ошибка создания файла: " + dataFile.getName(), e);
+        } catch (IllegalArgumentException e) {
+            throw new ManagerSaveException("Некорректный файл: " + dataFile.getName(), e);
         }
     }
 
@@ -147,7 +153,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
-
     @Override
     public void deleteEpicById(int id) {
         super.deleteEpicById(id);
@@ -184,7 +189,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         save();
     }
 
-
     private void save() {
         try (FileWriter writer = new FileWriter(dataFile, StandardCharsets.UTF_8, false)) {
             String header = "taskId,type,name,status,description,duration,startTime,endTime,epicId" + System.lineSeparator();
@@ -208,26 +212,35 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
     }
 
-    private File checkAndCreateFile(File file) {
+    private File checkAndCreateFile(File file) throws IOException {
         if (file == null) {
             file = new File("data.csv");
         }
-        try {
-            if (!file.exists()) {
-                if (file.createNewFile()) {
-                    System.out.println("Создан новый файл: " + file.getAbsolutePath());
-                } else {
-                    System.out.println("Не удалось создать новый файл: " + file.getAbsolutePath());
+
+        if (!file.exists()) {
+            // Создаем родительские директории, если их нет
+            File parentDir = file.getParentFile();
+            if (parentDir != null && !parentDir.exists()) {
+                if (!parentDir.mkdirs()) {
+                    throw new IOException("Не удалось создать директорию: " + parentDir.getAbsolutePath());
                 }
-            } else {
-                System.out.println("Используется существующий файл: " + file.getAbsolutePath());
             }
-            if (!file.isFile()) {
-                throw new IllegalArgumentException("Указанный путь ведет к директории, а не к файлу: " + file.getAbsolutePath());
+            if (!file.createNewFile()) {
+                throw new IOException("Не удалось создать файл: " + file.getAbsolutePath());
             }
-        } catch (IOException e) {
-            throw new RuntimeException("Ошибка при работе с файлом: " + file.getAbsolutePath(), e);
+            System.out.println("Создан новый файл: " + file.getAbsolutePath());
+        } else {
+            System.out.println("Используется существующий файл: " + file.getAbsolutePath());
         }
+
+        if (!file.isFile()) {
+            throw new IllegalArgumentException("Указанный путь ведет к директории, а не к файлу: " + file.getAbsolutePath());
+        }
+
+        if (!file.canWrite()) {
+            throw new IOException("Нет прав на запись в файл: " + file.getAbsolutePath());
+        }
+
         return file;
     }
 

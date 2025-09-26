@@ -83,7 +83,6 @@ class FileBackedTaskManagerTest {
         Task task = new Task("Test", "Desc", Status.NEW, Duration.ofHours(2).plusMinutes(30), LocalDateTime.now());
         manager.addNewTask(task);
 
-        // Используем статический метод из ТЗ
         FileBackedTaskManager loadedManager = new FileBackedTaskManager(testFile, true);
 
         assertFalse(loadedManager.getTasks().isEmpty());
