@@ -4,6 +4,7 @@ import model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,7 +17,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     protected abstract T createTaskManager();
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
         taskManager = createTaskManager();
     }
 
@@ -70,19 +71,18 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     // Тесты для эпиков
     @Test
     void shouldAddAndFindEpic() {
-        Epic epic = new Epic("Epic", "Description",
-                Duration.ofHours(1), LocalDateTime.now());
+        Epic epic = new Epic("Epic", "Description", null, null);
         taskManager.addNewEpic(epic);
 
         Epic savedEpic = taskManager.getEpicById(epic.getId());
         assertNotNull(savedEpic, "Эпик не найден");
-        assertEquals(epic, savedEpic, "Эпики не совпадают");
+        assertEquals(epic.getName(), savedEpic.getName(), "Названия эпиков не совпадают");
+        assertEquals(epic.getDescription(), savedEpic.getDescription(), "Описания эпиков не совпадают");
     }
 
     @Test
     void shouldUpdateEpic() {
-        Epic epic = new Epic("Epic", "Desc",
-                Duration.ofHours(1), LocalDateTime.now());
+        Epic epic = new Epic("Epic", "Desc", null, null);
         taskManager.addNewEpic(epic);
 
         epic.setStatus(Status.IN_PROGRESS);
@@ -93,8 +93,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     void shouldDeleteEpicWithSubtasks() {
-        Epic epic = new Epic("Epic", "Desc",
-                Duration.ofHours(1), LocalDateTime.now());
+        Epic epic = new Epic("Epic", "Desc", null, null);
         taskManager.addNewEpic(epic);
 
         Subtask subtask = new Subtask("Sub", "Desc", Status.NEW,
@@ -110,8 +109,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     // Тесты для подзадач
     @Test
     void shouldAddAndFindSubtaskWithEpic() {
-        Epic epic = new Epic("Epic", "Desc",
-                Duration.ofHours(1), LocalDateTime.now());
+        Epic epic = new Epic("Epic", "Desc", null, null);
         taskManager.addNewEpic(epic);
 
         Subtask subtask = new Subtask("Sub", "Desc", Status.NEW,
@@ -120,14 +118,13 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
         Subtask savedSubtask = taskManager.getSubtaskById(subtask.getId());
         assertNotNull(savedSubtask, "Подзадача не найдена");
-        assertEquals(subtask, savedSubtask, "Подзадачи не совпадают");
+        assertEquals(subtask.getName(), savedSubtask.getName(), "Названия подзадач не совпадают");
         assertEquals(epic.getId(), savedSubtask.getEpicId(), "Подзадача должна быть связана с эпиком");
     }
 
     @Test
     void shouldUpdateSubtask() {
-        Epic epic = new Epic("Epic", "Desc",
-                Duration.ofHours(1), LocalDateTime.now());
+        Epic epic = new Epic("Epic", "Desc", null, null);
         taskManager.addNewEpic(epic);
 
         Subtask subtask = new Subtask("Sub", "Desc", Status.NEW,

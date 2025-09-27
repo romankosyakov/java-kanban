@@ -67,14 +67,40 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager> {
         Epic epic = new Epic("Epic", "Description", null, null);
         taskManager.addNewEpic(epic);
 
-        assertDoesNotThrow(() -> {
-            taskManager.updateEpicStartTime(epic.getId());
-            taskManager.updateEpicEndTime(epic.getId());
-            taskManager.updateEpicDuration(epic.getId());
-        }, "Не должно быть исключений при расчете времени эпика без подзадач");
-
         assertNull(epic.getStartTime());
         assertNull(epic.getEndTime());
         assertNull(epic.getDuration());
     }
+
+    @Test
+    void shouldThrowIntersectExceptionForOverlappingTasks() {
+
+        LocalDateTime baseTime = LocalDateTime.of(2024, 1, 1, 10, 0);
+
+        Task task1 = new Task("Task1", "Desc", Status.NEW,
+                Duration.ofHours(2), baseTime);
+        taskManager.addNewTask(task1);
+
+        Task overlappingTask = new Task("Overlap", "Desc", Status.NEW,
+                Duration.ofHours(1), baseTime.plusMinutes(30));
+
+        assertThrows(IntersectWithOtherTaskException.class, () -> taskManager.addNewTask(overlappingTask),
+                "Должно бросаться IntersectWithOtherTaskException при пересечении времени задач");
+    }
+
+    @Test
+    void shouldNotThrowWhenTasksDoNotOverlap() {
+        LocalDateTime baseTime = LocalDateTime.of(2024, 1, 1, 10, 0);
+
+        Task task1 = new Task("Task1", "Desc", Status.NEW,
+                Duration.ofHours(1), baseTime);
+        taskManager.addNewTask(task1);
+
+        Task nonOverlappingTask = new Task("NoOverlap", "Desc", Status.NEW,
+                Duration.ofHours(1), baseTime.plusHours(2));
+
+        assertDoesNotThrow(() -> taskManager.addNewTask(nonOverlappingTask),
+                "Не должно быть исключений при непересекающихся задачах");
+    }
+
 }

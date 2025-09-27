@@ -146,7 +146,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    void updateEpicStartTime(int id) {
+    private void updateEpicStartTime(int id) {
         Epic epic = epics.get(id);
         if (epic != null) {
             Optional<LocalDateTime> minStartTime = getEpicSubtasks(epic).stream()
@@ -164,7 +164,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    void updateEpicEndTime(int id) {
+    private void updateEpicEndTime(int id) {
         Epic epic = epics.get(id);
         if (epic != null) {
             Optional<LocalDateTime> maxEndTime = getEpicSubtasks(epic).stream()
@@ -182,7 +182,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    void updateEpicDuration(int id) {
+    private void updateEpicDuration(int id) {
         Epic epic = epics.get(id);
         if (epic != null && epic.getStartTime() != null && epic.getEndTime() != null) {
             epic.setDuration(Duration.between(epic.getStartTime(), epic.getEndTime()));
