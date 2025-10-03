@@ -6,14 +6,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
-    private int id;
-    private final String name;
-    private final String description;
-    private Status status;
+    protected int id;
+    protected final String name;
+    protected final String description;
+    protected Status status;
     protected Duration duration;
     protected LocalDateTime startTime;
 
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+    private final transient DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
 
     public Task(String name, String description, Status status, Duration duration, LocalDateTime startTime) {
         this.name = name;
@@ -117,5 +117,13 @@ public class Task {
     public String getEndTimeConverted() {
         return startTime != null && duration != null ?
                 getEndTime().format(dateTimeFormatter) : "null";
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
     }
 }
