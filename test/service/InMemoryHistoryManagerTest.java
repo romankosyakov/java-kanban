@@ -5,88 +5,109 @@ import model.Status;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class InMemoryHistoryManagerTest {
-
+class InMemoryHistoryManagerTest {
     private HistoryManager historyManager;
-    private Task task1;
-    private Task task2;
-    private Task task3;
+    private Task task1, task2, task3;
 
     @BeforeEach
-    void setup() {
+    void setUp() {
         historyManager = new InMemoryHistoryManager();
-        task1 = new Task("Name1", "Desc1", Status.NEW);
-        task2 = new Task("Name2", "Desc2", Status.NEW);
-        task3 = new Task("Name3", "Desc3", Status.NEW);
+        task1 = new Task("Task1", "Desc1", Status.NEW,
+                Duration.ofHours(1), LocalDateTime.now());
+        task2 = new Task("Task2", "Desc2", Status.NEW,
+                Duration.ofHours(1), LocalDateTime.now().plusHours(2));
+        task3 = new Task("Task3", "Desc3", Status.NEW,
+                Duration.ofHours(1), LocalDateTime.now().plusHours(4));
         task1.setId(1);
         task2.setId(2);
         task3.setId(3);
     }
 
+    // Граничные условия для HistoryManager из ТЗ
     @Test
-    void shouldAddTasksToHistory() {
-        historyManager.addInHistory(task1);
-        historyManager.addInHistory(task2);
-        historyManager.addInHistory(task3);
-        assertEquals(List.of(task1, task2, task3), historyManager.getHistory());
+    void shouldReturnEmptyHistoryWhenNoTasksAdded() {
+        assertTrue(historyManager.getHistory().isEmpty(), "История должна быть пустой при инициализации");
     }
 
     @Test
-    void shouldDeletePreviousSameTaskInHistoryFromTheMiddle() { // так же проверяет работу linkLast и removeNode
+    void shouldHandleDuplicatesInHistory() {
         historyManager.addInHistory(task1);
-        historyManager.addInHistory(task2);
-        historyManager.addInHistory(task3);
-        historyManager.addInHistory(task2);
-        assertEquals(List.of(task1, task3, task2), historyManager.getHistory());
+        historyManager.addInHistory(task1);
+        historyManager.addInHistory(task1);
+
+        assertEquals(1, historyManager.getHistory().size(), "История не должна содержать дубликатов");
     }
 
     @Test
-    void shouldDeletePreviousSameTaskInHistoryFromHead() { // так же проверяет работу linkLast и removeNode
+    void shouldRemoveFromBeginningOfHistory() {
         historyManager.addInHistory(task1);
         historyManager.addInHistory(task2);
         historyManager.addInHistory(task3);
-        historyManager.addInHistory(task1);
-        assertEquals(List.of(task2, task3, task1), historyManager.getHistory());
-    }
 
-    @Test
-    void shouldDeletePreviousSameTaskInHistoryFromTail() { // так же проверяет работу linkLast и removeNode
-        historyManager.addInHistory(task1);
-        historyManager.addInHistory(task2);
-        historyManager.addInHistory(task3);
-        historyManager.addInHistory(task3);
-        assertEquals(List.of(task1, task2, task3), historyManager.getHistory());
-    }
-
-    @Test
-    void shouldDeleteHistoryNodeFromMiddle() { // так же проверяет работу linkLast и removeNode
-        historyManager.addInHistory(task1);
-        historyManager.addInHistory(task2);
-        historyManager.addInHistory(task3);
-        historyManager.removeNode(task2.getId());
-        assertEquals(List.of(task1, task3), historyManager.getHistory());
-    }
-
-    @Test
-    void shouldDeleteHistoryNodeFromHead() { // так же проверяет работу linkLast и removeNode
-        historyManager.addInHistory(task1);
-        historyManager.addInHistory(task2);
-        historyManager.addInHistory(task3);
         historyManager.removeNode(task1.getId());
-        assertEquals(List.of(task2, task3), historyManager.getHistory());
+
+        List<Task> history = historyManager.getHistory();
+        assertEquals(2, history.size(), "Должна удаляться задача из начала истории");
+        assertEquals(task2, history.get(0));
+        assertEquals(task3, history.get(1));
     }
 
     @Test
-    void shouldDeleteHistoryNodeFromTail() { // так же проверяет работу linkLast и removeNode
+    void shouldRemoveFromMiddleOfHistory() {
         historyManager.addInHistory(task1);
         historyManager.addInHistory(task2);
         historyManager.addInHistory(task3);
-        historyManager.removeNode(task3.getId());
-        assertEquals(List.of(task1, task2), historyManager.getHistory());
+
+        historyManager.removeNode(task2.getId());
+
+        List<Task> history = historyManager.getHistory();
+        assertEquals(2, history.size(), "Должна удаляться задача из середины истории");
+        assertEquals(task1, history.get(0));
+        assertEquals(task3, history.get(1));
     }
 
+    @Test
+    void shouldRemoveFromEndOfHistory() {
+        historyManager.addInHistory(task1);
+        historyManager.addInHistory(task2);
+        historyManager.addInHistory(task3);
+
+        historyManager.removeNode(task3.getId());
+
+        List<Task> history = historyManager.getHistory();
+        assertEquals(2, history.size(), "Должна удаляться задача из конца истории");
+        assertEquals(task1, history.get(0));
+        assertEquals(task2, history.get(1));
+    }
+
+    @Test
+    void shouldMaintainOrderAfterMultipleOperations() {
+        historyManager.addInHistory(task1);
+        historyManager.addInHistory(task2);
+        historyManager.addInHistory(task3);
+
+        historyManager.removeNode(task2.getId());
+        historyManager.addInHistory(task2);
+
+        List<Task> history = historyManager.getHistory();
+        assertEquals(3, history.size(), "Должен сохраняться порядок после операций");
+        assertEquals(task1, history.get(0));
+        assertEquals(task3, history.get(1));
+        assertEquals(task2, history.get(2));
+    }
+
+    @Test
+    void shouldHandleRemovalOfNonExistentTask() {
+        historyManager.addInHistory(task1);
+
+        assertDoesNotThrow(() -> historyManager.removeNode(999),
+                "Не должно быть исключений при удалении несуществующей задачи");
+        assertEquals(1, historyManager.getHistory().size());
+    }
 }
