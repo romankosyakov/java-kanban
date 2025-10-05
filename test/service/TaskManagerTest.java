@@ -178,12 +178,15 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     void shouldRemoveFromHistoryWhenDeleted() {
         Task task = new Task("Task", "Desc", Status.NEW,
                 Duration.ofHours(1), LocalDateTime.now());
+        Task task2 = new Task("Task2", "Desc2", Status.NEW,
+                Duration.ofHours(1), LocalDateTime.now().plusHours(4));
         taskManager.addNewTask(task);
-
+        taskManager.addNewTask(task2);
         taskManager.getTaskById(task.getId());
+        taskManager.getTaskById(task2.getId());
         taskManager.deleteTaskById(task.getId());
 
-        assertTrue(taskManager.getHistory().isEmpty(), "История должна очищаться при удалении задачи");
+        assertEquals(1, taskManager.getHistory().size(), "История должна очищаться при удалении задачи");
     }
 
     // Тесты для расчета статуса Epic
