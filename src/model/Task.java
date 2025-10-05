@@ -1,5 +1,8 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
@@ -7,11 +10,17 @@ public class Task {
     private final String name;
     private final String description;
     private Status status;
+    protected Duration duration;
+    protected LocalDateTime startTime;
 
-    public Task(String name, String description, Status status) {
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
+
+    public Task(String name, String description, Status status, Duration duration, LocalDateTime startTime) {
         this.name = name;
         this.description = description;
         this.status = status;
+        this.duration = duration;
+        this.startTime = startTime;
     }
 
     public TaskType getType() {
@@ -47,7 +56,11 @@ public class Task {
         return "model.Task{" +
                 "name=" + name +
                 ", description=" + description +
-                ", status=" + status.toString();
+                ", status=" + status.toString() +
+                ", duration=" + getDurationConverted() +
+                ", startTime=" + getStartTimeConverted() +
+                ", endTime=" + getEndTimeConverted() +
+                "}";
     }
 
     @Override
@@ -73,5 +86,36 @@ public class Task {
             hash += description.hashCode();
         }
         return hash;
+    }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public LocalDateTime getEndTime() {
+        if (startTime == null || duration == null) {
+            return null;
+        }
+        return startTime.plus(duration);
+    }
+
+    public String getDurationConverted() {
+        return duration != null ? String.format("%d:%02d:%02d",
+                duration.toHours(),
+                duration.toMinutesPart(),
+                duration.toSecondsPart()) : "null";
+    }
+
+    public String getStartTimeConverted() {
+        return startTime != null ? startTime.format(dateTimeFormatter) : "null";
+    }
+
+    public String getEndTimeConverted() {
+        return startTime != null && duration != null ?
+                getEndTime().format(dateTimeFormatter) : "null";
     }
 }
