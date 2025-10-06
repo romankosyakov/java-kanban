@@ -1,6 +1,6 @@
 package server.handlers;
 
-import com.google.gson.Gson;
+import com.google.gson.*;
 import com.sun.net.httpserver.HttpExchange;
 import exceptions.NotFoundException;
 import model.Epic;
@@ -78,16 +78,8 @@ public class EpicHandler extends BaseHttpHandler {
                 sendBadRequest(exchange, "Неверный формат URL. Ожидается: /epics/{id}/subtasks");
                 return;
             }
-
             int epicId = Integer.parseInt(pathParts[2]);
-            Epic epic = taskManager.getEpicById(epicId);
-
-            if (epic == null) {
-                sendNotFound(exchange, "Эпик с ID " + epicId + " не найден");
-                return;
-            }
-
-            List<Subtask> subtasks = taskManager.getEpicSubtasks(epic);
+            List<Subtask> subtasks = taskManager.getEpicSubtasks(epicId);
             sendSuccess(exchange, subtasks);
         } catch (NotFoundException e) {
             sendNotFound(exchange, e.getMessage());
@@ -120,7 +112,7 @@ public class EpicHandler extends BaseHttpHandler {
                 epic.setId(newId);
                 sendCreated(exchange, epic);
             }
-        } catch (com.google.gson.JsonSyntaxException e) {
+        } catch (JsonSyntaxException e) {
             sendBadRequest(exchange, "Невалидный JSON: " + e.getMessage());
         } catch (RuntimeException e) {
             sendBadRequest(exchange, e.getMessage());
@@ -134,7 +126,7 @@ public class EpicHandler extends BaseHttpHandler {
 
         if (idParam == null) {
             try {
-                taskManager.deleteAllSubtasks();
+                taskManager.deleteAllEpics();
                 sendNoContent(exchange);
             } catch (NotFoundException e) {
                 sendNoContent(exchange); // подзадач нет - не ошибка
@@ -144,7 +136,7 @@ public class EpicHandler extends BaseHttpHandler {
         } else {
             try {
                 int id = Integer.parseInt(idParam);
-                taskManager.deleteSubtaskById(id);
+                taskManager.deleteEpicById(id);
                 sendNoContent(exchange);
             } catch (NumberFormatException e) {
                 sendBadRequest(exchange, "Неверный формат ID подзадачи");

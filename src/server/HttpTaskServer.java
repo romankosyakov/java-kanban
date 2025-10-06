@@ -71,6 +71,10 @@ public class HttpTaskServer {
         return port;
     }
 
+    public TaskManager getTaskManager() {
+        return taskManager;
+    }
+
     public static void main(String[] args) {
         try {
             HttpTaskServer taskServer = new HttpTaskServer();

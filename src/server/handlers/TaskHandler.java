@@ -69,12 +69,8 @@ public class TaskHandler extends BaseHttpHandler {
 
             if (idParam == null) {
                 taskManager.addNewTask(task);
-                int newId = task.getId();
-                task.setId(newId);
                 sendCreated(exchange, task);
             } else {
-                int id = Integer.parseInt(idParam);
-                task.setId(id);
                 taskManager.updateTask(task);
                 sendSuccess(exchange, task);
             }

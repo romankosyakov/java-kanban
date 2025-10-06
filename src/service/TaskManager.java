@@ -1,17 +1,16 @@
 package service;
 
-import exceptions.NotFoundException;
 import model.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public interface TaskManager {
-    void deleteAllTasks() throws NotFoundException;
+    void deleteAllTasks();
 
-    void deleteAllEpics() throws NotFoundException;
+    void deleteAllEpics();
 
-    void deleteAllSubtasks() throws NotFoundException;
+    void deleteAllSubtasks();
 
     ArrayList<Task> getTasks();
 
@@ -19,13 +18,13 @@ public interface TaskManager {
 
     ArrayList<Subtask> getSubtasks();
 
-    void addNewTask(Task task) throws NotFoundException;
+    void addNewTask(Task task);
 
-    void addNewEpic(Epic epic) throws NotFoundException;
+    void addNewEpic(Epic epic);
 
-    void addNewSubtask(Subtask subtask) throws NotFoundException;
+    void addNewSubtask(Subtask subtask);
 
-    ArrayList<Subtask> getEpicSubtasks(Epic epic) throws NotFoundException;
+    ArrayList<Subtask> getEpicSubtasks(int epicId);
 
     Epic getEpicById(int id);
 
@@ -33,19 +32,19 @@ public interface TaskManager {
 
     Subtask getSubtaskById(int id);
 
-    void deleteEpicById(int id) throws NotFoundException;
+    void deleteEpicById(int id);
 
-    void deleteTaskById(int id) throws NotFoundException;
+    void deleteTaskById(int id);
 
-    void deleteSubtaskById(int id) throws NotFoundException;
+    void deleteSubtaskById(int id);
 
-    void updateTask(Task task) throws NotFoundException;
+    void updateTask(Task task);
 
-    void updateEpic(Epic epic) throws NotFoundException;
+    void updateEpic(Epic epic);
 
-    void updateSubtask(Subtask subtask) throws NotFoundException;
+    void updateSubtask(Subtask subtask);
 
-    List<Task> getHistory() throws NotFoundException;
+    List<Task> getHistory();
 
     ArrayList<Task> getPrioritizedTasks();
 }

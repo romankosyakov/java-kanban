@@ -301,7 +301,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         taskManager.addNewSubtask(sub1);
         taskManager.addNewSubtask(sub2);
 
-        List<Subtask> epicSubtasks = taskManager.getEpicSubtasks(epic);
+        List<Subtask> epicSubtasks = taskManager.getEpicSubtasks(epic.getId());
 
         assertEquals(2, epicSubtasks.size(), "Должны возвращаться все подзадачи эпика");
         assertTrue(epicSubtasks.contains(sub1));

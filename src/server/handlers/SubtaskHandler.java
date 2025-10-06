@@ -77,11 +77,8 @@ public class SubtaskHandler extends BaseHttpHandler {
 
             if (idParam == null) {
                 taskManager.addNewSubtask(subtask);
-                subtask.setId(subtask.getId());
                 sendCreated(exchange, subtask);
             } else {
-                int id = Integer.parseInt(idParam);
-                subtask.setId(id);
                 taskManager.updateSubtask(subtask);
                 sendSuccess(exchange, subtask);
             }
