@@ -1,5 +1,6 @@
 package service;
 
+import exceptions.IntersectWithOtherTaskException;
 import model.*;
 import org.junit.jupiter.api.Test;
 

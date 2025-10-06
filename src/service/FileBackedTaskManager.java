@@ -145,12 +145,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public void deleteAllEpics() {
         super.deleteAllEpics();
         save();
+
     }
 
     @Override
     public void deleteAllSubtasks() {
         super.deleteAllSubtasks();
         save();
+
     }
 
     @Override
